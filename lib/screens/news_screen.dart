@@ -73,8 +73,8 @@ class _HomePageState extends State<HomePage> {
                       "Top Headliness",
                       style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 19,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SliverToBoxAdapter(
             child: SizedBox(
-              height: 25,
+              height: 15,
             ),
           ),
           SliverToBoxAdapter(
@@ -105,8 +105,8 @@ class _HomePageState extends State<HomePage> {
                 "More News",
                 style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 19,
-                    fontWeight: FontWeight.w500),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600),
               ),
             ),
           ),

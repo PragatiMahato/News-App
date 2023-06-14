@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../models/news_models.dart';
 
-
 class WebViewScreen extends StatefulWidget {
   final ArticleModel articlemodal;
   const WebViewScreen({super.key, required this.articlemodal});
@@ -13,8 +12,6 @@ class WebViewScreen extends StatefulWidget {
 
 class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
-  
-
 
   @override
   void initState() {
@@ -27,15 +24,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 248, 238, 226),
-          iconTheme: const IconThemeData(
-            color: Colors.black,
-          ),
+        backgroundColor: const Color.fromARGB(255, 248, 238, 226),
+        iconTheme: const IconThemeData(
+          color: Colors.black,
         ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: WebViewWidget(controller: _controller),
       ),
+      body: Container(
+          padding: const EdgeInsets.all(20),
+          child: WebViewWidget(
+            controller: _controller,
+          )),
     );
   }
 }
