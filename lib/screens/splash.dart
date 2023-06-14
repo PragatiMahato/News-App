@@ -1,9 +1,6 @@
 // ignore_for_file: file_names
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import 'news_screen.dart';
 
 class SplashScreen extends StatefulWidget {
