@@ -1,24 +1,69 @@
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 
-class Auth {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  User? get currentUser => _firebaseAuth.currentUser;
+class FirebaseAuthHelper {
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+static Future<User?> registerUsingEmailPassword({
+  required String name,
+  required String email,
+  required String password,
+}) async {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
 
-  Future<void> signInWithEmailAndPassword(
-      {required String email, required String password}) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+  try {
+    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    user = userCredential.user;
+    await user!.updateProfile(displayName: name);
+    await user.reload();
+    user = auth.currentUser;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'weak-password') {
+      print('The password provided is too weak.');
+    } else if (e.code == 'email-already-in-use') {
+      print('The account already exists for that email.');
+    }
+  } catch (e) {
+    print(e);
   }
 
-   Future<void> createUserWithEmailAndPassword(
-      {required String email, required String password}) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-  }
-
-   Future<void> signOut() async {
-    await Auth().signOut();
-  }
+  return user;
 }
+
+ 
+
+
+static Future<User?> signInUsingEmailPassword({
+  required String email,
+  required String password,
+}) async {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
+
+  try {
+    UserCredential userCredential = await auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    user = userCredential.user;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found') {
+      print('No user found for that email.');
+    } else if (e.code == 'wrong-password') {
+      print('Wrong password provided.');
+    }
+  }
+
+  return user;
+}
+
+}
+
+ 
+
+ 

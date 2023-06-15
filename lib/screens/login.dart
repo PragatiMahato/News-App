@@ -1,26 +1,67 @@
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/screens/signup.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import '../auth.dart';
+import '../validator.dart';
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
+
+class LoginScreen extends StatefulWidget {
+@override
+_LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.purpleAccent,
-        body: SingleChildScrollView(
+final _formKey = GlobalKey<FormState>();
+
+final _emailTextController = TextEditingController();
+final _passwordTextController = TextEditingController();
+
+final _focusEmail = FocusNode();
+final _focusPassword = FocusNode();
+
+bool _isProcessing = false;
+
+Future<FirebaseApp> _initializeFirebase() async {
+  FirebaseApp firebaseApp = await Firebase.initializeApp();
+
+  User? user = FirebaseAuth.instance.currentUser;
+
+  if (user != null) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(
+        
+        ),
+      ),
+    );
+  }
+
+  return firebaseApp;
+}
+
+@override
+Widget build(BuildContext context) {
+  return GestureDetector(
+    onTap: () {
+      _focusEmail.unfocus();
+      _focusPassword.unfocus();
+    },
+    child: Scaffold(
+      body: FutureBuilder(
+        future: _initializeFirebase(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return SingleChildScrollView(
           child: Container(
             constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
                 maxWidth: MediaQuery.of(context).size.width),
             decoration: const BoxDecoration(
-              color: Colors.purpleAccent,
+              color: Colors.deepOrangeAccent,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,73 +107,118 @@ class _LoginScreenState extends State<LoginScreen> {
                             topRight: Radius.circular(50))),
                     child: Padding(
                       padding: const EdgeInsets.all(25),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 110,
+                      child:Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 60,),
+                        TextFormField(
+                          controller: _emailTextController,
+                          focusNode: _focusEmail,
+                          validator: (value) => Validator.validateEmail(
+                            email: value,
                           ),
-                          TextField(
-                            decoration: InputDecoration(
+                          decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none),
                                 filled: true,
                                 fillColor:
-                                    const Color.fromARGB(255, 229, 229, 229),
+                                     Color.fromARGB(
+                                        255, 229, 229, 229),
                                 hintText: "Enter your email",
                                 prefixIcon: const Icon(Icons.email)),
+                        ),
+                        SizedBox(height: 35),
+                        TextFormField(
+                          controller: _passwordTextController,
+                          focusNode: _focusPassword,
+                          obscureText: true,
+                          validator: (value) => Validator.validatePassword(
+                            password: value,
                           ),
-                          const SizedBox(
-                            height: 45,
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
+                          decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none),
                                 filled: true,
                                 fillColor:
-                                    const Color.fromARGB(255, 229, 229, 229),
+                                    Color.fromARGB(
+                                        255, 229, 229, 229),
                                 hintText: "Enter your password",
                                 prefixIcon: const Icon(Icons.remove_red_eye)),
-                          ),
-                          SizedBox(
+                        ),
+                        const SizedBox(
                             height: 15,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 250),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 250),
                             child: Text(
                               "Forget Password?",
-                              style: TextStyle(color: Colors.purpleAccent),
+                              style: TextStyle(color: Colors.deepOrangeAccent),
                             ),
                           ),
-                          SizedBox(
-                            height: 60,
-                          ),
-                          Container(
-                            height: 60,
-                            width: double.infinity,
-                            decoration:
-                                BoxDecoration(color: Colors.purpleAccent),
-                            child: TextButton(
-                                onPressed: () {},
+                        SizedBox(height: 60),
+                        _isProcessing
+                        ? CircularProgressIndicator()
+                        : Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  _focusEmail.unfocus();
+                                  _focusPassword.unfocus();
+
+                                  if (_formKey.currentState!
+                                      .validate()) {
+                                    setState(() {
+                                      _isProcessing = true;
+                                    });
+
+                                    User? user = await FirebaseAuthHelper
+                                        .signInUsingEmailPassword(
+                                      email: _emailTextController.text,
+                                      password:
+                                          _passwordTextController.text,
+                                    );
+
+                                    setState(() {
+                                      _isProcessing = false;
+                                    });
+
+                                    if (user != null) {
+                                      Navigator.of(context)
+                                          .pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomePage(),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
                                 child: Text(
-                                  "Sign in",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400),
-                                )),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
+                                  'Sign In',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(Colors.deepOrangeAccent),
+                                ),
+                              ),
+                            ),
+
+                             
+                            
+                           
+                          ],
+                        ),
+
+                        Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 "Don't have account?",
                                 style: TextStyle(fontSize: 18),
                               ),
@@ -141,25 +227,38 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
                                       builder: (context) =>
-                                          const SignUpScreen(),
+                                           SignUpScreen(),
                                     ));
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "Sign up",
                                     style: TextStyle(
                                         fontSize: 18,
-                                        color: Colors.purpleAccent),
+                                        color: Colors.deepOrangeAccent),
                                   ))
                             ],
                           )
-                        ],
-                      ),
+                      ],
+                    ),
+                  )
                     ),
                   ),
                 )
               ],
             ),
           ),
-        ));
-  }
+        );
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    ),
+  );
 }
+}
+
+
+ 
