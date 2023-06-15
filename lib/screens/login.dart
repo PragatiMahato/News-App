@@ -1,61 +1,51 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:news_app/screens/news_screen.dart';
 import 'package:news_app/screens/signup.dart';
 
 import '../auth.dart';
 import '../validator.dart';
-
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
-@override
-_LoginScreenState createState() => _LoginScreenState();
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-final _emailTextController = TextEditingController();
-final _passwordTextController = TextEditingController();
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
 
-final _focusEmail = FocusNode();
-final _focusPassword = FocusNode();
+  final _focusEmail = FocusNode();
+  final _focusPassword = FocusNode();
 
-bool _isProcessing = false;
+  bool _isProcessing = false;
 
-Future<FirebaseApp> _initializeFirebase() async {
-  FirebaseApp firebaseApp = await Firebase.initializeApp();
+  Future<FirebaseApp> _initializeFirebase() async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
 
-  User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;
 
-  if (user != null) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(
-        
+    if (user != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(
+              // user: user,
+              ),
         ),
-      ),
-    );
+      );
+    }
+
+    return firebaseApp;
   }
 
-  return firebaseApp;
-}
-
-@override
-Widget build(BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      _focusEmail.unfocus();
-      _focusPassword.unfocus();
-    },
-    child: Scaffold(
-      body: FutureBuilder(
-        future: _initializeFirebase(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return SingleChildScrollView(
+  @override
+  Widget build(BuildContext context) {
+   return Scaffold(
+        backgroundColor: Colors.deepOrangeAccent,
+        body: SingleChildScrollView(
           child: Container(
             constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
@@ -107,7 +97,7 @@ Widget build(BuildContext context) {
                             topRight: Radius.circular(50))),
                     child: Padding(
                       padding: const EdgeInsets.all(25),
-                      child:Form(
+                      child:  Form(
                     key: _formKey,
                     child: Column(
                       children: <Widget>[
@@ -118,18 +108,17 @@ Widget build(BuildContext context) {
                           validator: (value) => Validator.validateEmail(
                             email: value,
                           ),
-                          decoration: InputDecoration(
+                           decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none),
                                 filled: true,
                                 fillColor:
-                                     Color.fromARGB(
-                                        255, 229, 229, 229),
+                                    const Color.fromARGB(255, 229, 229, 229),
                                 hintText: "Enter your email",
                                 prefixIcon: const Icon(Icons.email)),
                         ),
-                        SizedBox(height: 35),
+                        SizedBox(height: 30),
                         TextFormField(
                           controller: _passwordTextController,
                           focusNode: _focusPassword,
@@ -137,85 +126,71 @@ Widget build(BuildContext context) {
                           validator: (value) => Validator.validatePassword(
                             password: value,
                           ),
-                          decoration: InputDecoration(
+                           decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none),
                                 filled: true,
                                 fillColor:
-                                    Color.fromARGB(
-                                        255, 229, 229, 229),
+                                    const Color.fromARGB(255, 229, 229, 229),
                                 hintText: "Enter your password",
                                 prefixIcon: const Icon(Icons.remove_red_eye)),
                         ),
-                        const SizedBox(
-                            height: 15,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 250),
-                            child: Text(
-                              "Forget Password?",
-                              style: TextStyle(color: Colors.deepOrangeAccent),
-                            ),
-                          ),
-                        SizedBox(height: 60),
+                        SizedBox(height: 50),
                         _isProcessing
                         ? CircularProgressIndicator()
-                        : Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  _focusEmail.unfocus();
-                                  _focusPassword.unfocus();
+                        :
+                            Container(
+                            height: 60,
+                            width: double.infinity,
+                            decoration:
+                                const BoxDecoration(color: Colors.purpleAccent),
+                                 child: TextButton(
+                                
+                              onPressed: () async {
+                                _focusEmail.unfocus();
+                                _focusPassword.unfocus();
 
-                                  if (_formKey.currentState!
-                                      .validate()) {
-                                    setState(() {
-                                      _isProcessing = true;
-                                    });
+                                if (_formKey.currentState!
+                                    .validate()) {
+                                  setState(() {
+                                    _isProcessing = true;
+                                  });
 
-                                    User? user = await FirebaseAuthHelper
-                                        .signInUsingEmailPassword(
-                                      email: _emailTextController.text,
-                                      password:
-                                          _passwordTextController.text,
+                                  User? user = await FirebaseAuthHelper
+                                      .signInUsingEmailPassword(
+                                    email: _emailTextController.text,
+                                    password:
+                                        _passwordTextController.text,
+                                  );
+
+                                  setState(() {
+                                    _isProcessing = false;
+                                  });
+
+                                  if (user != null) {
+                                    Navigator.of(context)
+                                        .pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomeScreen(),
+                                      ),
                                     );
-
-                                    setState(() {
-                                      _isProcessing = false;
-                                    });
-
-                                    if (user != null) {
-                                      Navigator.of(context)
-                                          .pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomePage(),
-                                        ),
-                                      );
-                                    }
                                   }
-                                },
-                                child: Text(
-                                  'Sign In',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.deepOrangeAccent),
-                                ),
+                                }
+                              },
+                              child: Text(
+                                'Sign In',
+                                style: TextStyle(color: Colors.white),
                               ),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(Colors.deepOrangeAccent),
+                              ),)
                             ),
-
-                             
-                            
                            
-                          ],
-                        ),
+                        
 
-                        Row(
+                         Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
@@ -223,13 +198,14 @@ Widget build(BuildContext context) {
                                 style: TextStyle(fontSize: 18),
                               ),
                               TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
+                                 onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
                                       builder: (context) =>
-                                           SignUpScreen(),
-                                    ));
-                                  },
+                                          SignUpScreen(),
+                                    ),
+                                  );
+                                },
                                   child: const Text(
                                     "Sign up",
                                     style: TextStyle(
@@ -240,25 +216,12 @@ Widget build(BuildContext context) {
                           )
                       ],
                     ),
-                  )
                     ),
                   ),
-                )
-              ],
+                ))
+              ]
             ),
           ),
-        );
-          }
-
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-    ),
-  );
+        ));
+  }
 }
-}
-
-
- 
