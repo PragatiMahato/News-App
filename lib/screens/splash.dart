@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:news_app/screens/login.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -16,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Timer(const Duration(seconds: 10), () {
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>  const LoginScreen(),
+        builder: (context) => const LoginScreen(),
       ));
     });
     super.initState();

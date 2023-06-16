@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import '../models/news_models.dart';
 import 'news_overview.dart';
 
-
-
 class DetailPage extends StatelessWidget {
   final ArticleModel article;
 
@@ -23,7 +21,8 @@ class DetailPage extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        body: SingleChildScrollView(scrollDirection: Axis.vertical,
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             children: [
               Image.network(
@@ -45,10 +44,10 @@ class DetailPage extends StatelessWidget {
                           child: Text(
                             article.title.toString(),
                             style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',color: Color.fromARGB(255, 78, 78, 78)
-                          ),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                                color: Color.fromARGB(255, 78, 78, 78)),
                           ),
                         ),
                       ],
@@ -56,15 +55,16 @@ class DetailPage extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           article.publishedAt.toString(),
-                         style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',color: Color.fromARGB(255, 26, 26, 26)
-                          ),
+                          style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                              color: Color.fromARGB(255, 26, 26, 26)),
                         ),
                       ],
                     ),
@@ -79,10 +79,10 @@ class DetailPage extends StatelessWidget {
                               ? Text(
                                   article.description.toString(),
                                   style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',color: Color.fromARGB(255, 62, 62, 62)
-                          ),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Poppins',
+                                      color: Color.fromARGB(255, 62, 62, 62)),
                                 )
                               : const Text(""),
                         ),
@@ -107,11 +107,19 @@ class DetailPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               Visibility(
                 visible: (article.content?.length ?? 0) > 0,
-                child: Container(height: 55,width: double.infinity,margin: const EdgeInsets.symmetric(horizontal: 30,vertical: 20),
-                decoration: BoxDecoration(color: Colors.black,borderRadius: BorderRadius.circular(10)),
+                child: Container(
+                  height: 55,
+                  width: double.infinity,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(10)),
                   child: TextButton(
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -122,7 +130,10 @@ class DetailPage extends StatelessWidget {
                           },
                         ));
                       },
-                      child:const Text("Read More",style: TextStyle(color: Colors.white),)),
+                      child: const Text(
+                        "Read More",
+                        style: TextStyle(color: Colors.white),
+                      )),
                 ),
               ),
             ],

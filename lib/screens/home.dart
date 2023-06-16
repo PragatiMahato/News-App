@@ -46,8 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: const [
               Text("News",
                   style: TextStyle(
-                      color:
-                          Colors.deepOrangeAccent,
+                      color: Colors.deepOrangeAccent,
                       fontSize: 23,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'Poppins')),
@@ -61,17 +60,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: [
             IconButton(
-            icon: Icon(Icons.logout,color:  const Color.fromARGB(255, 31, 87, 83).withOpacity(1),),
-           onPressed: () async {
+              icon: Icon(
+                Icons.logout,
+                color: const Color.fromARGB(255, 31, 87, 83).withOpacity(1),
+              ),
+              onPressed: () async {
                 await FirebaseAuth.instance.signOut();
 
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
+                    builder: (context) => const LoginScreen(),
                   ),
                 );
               },
-          ),
+            ),
           ],
         ),
         body: CustomScrollView(slivers: [
@@ -139,14 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ]));
   }
+
   Future<dynamic> Logout() async {
+    await FirebaseAuth.instance.signOut();
 
-  await FirebaseAuth.instance.signOut();
-
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(
-      builder: (context) => LoginScreen(),
-    ),
-  );
-}
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
+  }
 }

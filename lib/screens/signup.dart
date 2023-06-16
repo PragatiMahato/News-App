@@ -1,6 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +7,9 @@ import 'package:news_app/screens/login.dart';
 
 import '../auth.dart';
 
-import 'home.dart';
-
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -28,7 +27,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _focusPassword = FocusNode();
 
   bool _isProcessing = false;
-  late String _password;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +144,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 obscureText: passwordObsecured,
                                 controller: _passwordTextController,
                                 focusNode: _focusPassword,
-                               
                                 validator: (value) {
                                   if (value == null) {
                                     return null;
@@ -160,9 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                                   return null;
                                 },
-                                onSaved: (value) {
-                          _password = value!;
-                        },
+                                onSaved: (value) {},
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -188,64 +183,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const SizedBox(height: 40),
                               _isProcessing
                                   ? const CircularProgressIndicator()
-                                  : Row(
-                                      children: [
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              setState(() {
-                                                _isProcessing = true;
-                                              });
+                                  : Container(
+                                        height: 60,
+                                        width: double.infinity,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.purpleAccent),
+                                        child: TextButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        _isProcessing = true;
+                                      });
 
-                                              if (_registerFormKey.currentState!
-                                                  .validate()) {
-                                                User? user =
-                                                    await FirebaseAuthHelper
-                                                        .registerUsingEmailPassword(
-                                                  name:
-                                                      _nameTextController.text,
-                                                  email:
-                                                      _emailTextController.text,
-                                                  password:
-                                                      _passwordTextController
-                                                          .text,
-                                                );
+                                      if (_registerFormKey.currentState!
+                                          .validate()) {
+                                        User? user =
+                                            await FirebaseAuthHelper
+                                                .registerUsingEmailPassword(
+                                          name:
+                                              _nameTextController.text,
+                                          email:
+                                              _emailTextController.text,
+                                          password:
+                                              _passwordTextController
+                                                  .text,
+                                        );
 
-                                                setState(() {
-                                                  _isProcessing = false;
-                                                });
+                                        setState(() {
+                                          _isProcessing = false;
+                                        });
 
-                                                if (user != null) {
-                                                  Navigator.of(context)
-                                                      .pushAndRemoveUntil(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const HomeScreen(),
-                                                    ),
-                                                    ModalRoute.withName('/'),
-                                                  );
-                                                }
-                                              } else {
-                                                setState(() {
-                                                  _isProcessing = false;
-                                                });
-                                              }
-                                            },
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.deepOrangeAccent),
+                                        if (user != null) {
+                                          Navigator.of(context)
+                                              .pushAndRemoveUntil(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const LoginScreen(),
                                             ),
-                                            child: const Text(
-                                              'Sign up',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 21),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                            ModalRoute.withName('/'),
+                                          );
+                                        }
+                                      } else {
+                                        setState(() {
+                                          _isProcessing = false;
+                                        });
+                                      }
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.deepOrangeAccent),
                                     ),
+                                    child: const Text(
+                                      'Sign up',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 21),
+                                    ),)
+                                  ),
                               const SizedBox(
                                 height: 5,
                               ),

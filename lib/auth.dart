@@ -1,5 +1,3 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthHelper {
@@ -34,8 +32,6 @@ static Future<User?> registerUsingEmailPassword({
 
   return user;
 }
-
- 
 
 
 static Future<User?> signInUsingEmailPassword({
