@@ -1,19 +1,22 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/screens/signup.dart';
-
 import '../auth.dart';
-import '../validator.dart';
 import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool passwordObsecured = true;
 
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
@@ -23,23 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isProcessing = false;
 
-  Future<FirebaseApp> _initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(
-              // user: user,
-              ),
-        ),
-      );
-    }
-
-    return firebaseApp;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +86,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       child:  Form(
                     key: _formKey,
                     child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 60,),
+                      children:[
+                        const SizedBox(height: 60,),
                         TextFormField(
                           controller: _emailTextController,
                           focusNode: _focusEmail,
-                          validator: (value) => Validator.validateEmail(
-                            email: value,
-                          ),
+                          validator: (value) {
+                        if (value!.isEmpty) {
+                  return 'Email is required';
+                }
+                if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$').hasMatch(value)) {
+                  return 'Invalid email format';
+                }
+                return null;
+                      },
                            decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -118,14 +110,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintText: "Enter your email",
                                 prefixIcon: const Icon(Icons.email)),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         TextFormField(
+                          obscureText: passwordObsecured,
                           controller: _passwordTextController,
                           focusNode: _focusPassword,
-                          obscureText: true,
-                          validator: (value) => Validator.validatePassword(
-                            password: value,
-                          ),
+                         
+                          validator: (value){
+                            if (value == null) {
+    return null;
+  }
+
+  if (value.isEmpty) {
+    return 'Password can\'t be empty';
+  } else if (value.length < 6) {
+    return 'Enter a password with length at least 6';
+  }
+
+  return null;
+                          },
                            decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -134,11 +137,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fillColor:
                                     const Color.fromARGB(255, 229, 229, 229),
                                 hintText: "Enter your password",
-                                prefixIcon: const Icon(Icons.remove_red_eye)),
+                                prefixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          passwordObsecured =
+                                              !passwordObsecured;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        passwordObsecured
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      )),),
                         ),
-                        SizedBox(height: 50),
+                        const SizedBox(height: 50),
                         _isProcessing
-                        ? CircularProgressIndicator()
+                        ? const CircularProgressIndicator()
                         :
                             Container(
                             height: 60,
@@ -173,18 +187,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                         .pushReplacement(
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            HomeScreen(),
+                                            const HomeScreen(),
                                       ),
                                     );
                                   }
                                 }
                               },
-                              child: Text(
-                                'Sign In',
-                                style: TextStyle(color: Colors.white),
-                              ),
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(Colors.deepOrangeAccent),
+                              ),
+                              child: const Text(
+                                'Sign In',
+                                style: TextStyle(color: Colors.white,fontSize: 21),
                               ),)
                             ),
                            

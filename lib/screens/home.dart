@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, non_constant_identifier_names
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,15 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("FW",
+            children: const [
+              Text("News",
                   style: TextStyle(
                       color:
-                          const Color.fromARGB(255, 31, 87, 83).withOpacity(1),
+                          Colors.deepOrangeAccent,
                       fontSize: 23,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'Poppins')),
-              const Text("News",
+              Text("World",
                   style: TextStyle(
                       color: Color.fromARGB(255, 64, 59, 54),
                       fontSize: 23,
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: [
             IconButton(
-            icon: Icon(Icons.logout,color:  Color.fromARGB(255, 31, 87, 83).withOpacity(1),),
+            icon: Icon(Icons.logout,color:  const Color.fromARGB(255, 31, 87, 83).withOpacity(1),),
            onPressed: () async {
                 await FirebaseAuth.instance.signOut();
 

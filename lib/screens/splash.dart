@@ -1,7 +1,8 @@
 // ignore_for_file: file_names
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'news_screen.dart';
+import 'package:news_app/screens/login.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Timer(const Duration(seconds: 10), () {
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => const HomePage(),
+        builder: (context) =>  const LoginScreen(),
       ));
     });
     super.initState();

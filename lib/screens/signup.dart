@@ -1,35 +1,38 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:news_app/screens/login.dart';
 
-
 import '../auth.dart';
-import '../validator.dart';
+
 import 'home.dart';
 
 class SignUpScreen extends StatefulWidget {
-@override
-_SignUpScreenState createState() => _SignUpScreenState();
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-final _registerFormKey = GlobalKey<FormState>();
+  final _registerFormKey = GlobalKey<FormState>();
+  bool passwordObsecured = true;
 
-final _nameTextController = TextEditingController();
-final _emailTextController = TextEditingController();
-final _passwordTextController = TextEditingController();
+  final _nameTextController = TextEditingController();
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
 
-final _focusName = FocusNode();
-final _focusEmail = FocusNode();
-final _focusPassword = FocusNode();
+  final _focusName = FocusNode();
+  final _focusEmail = FocusNode();
+  final _focusPassword = FocusNode();
 
-bool _isProcessing = false;
+  bool _isProcessing = false;
+  late String _password;
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
         backgroundColor: Colors.deepOrangeAccent,
         body: SingleChildScrollView(
           child: Container(
@@ -82,151 +85,201 @@ Widget build(BuildContext context) {
                             topLeft: Radius.circular(50),
                             topRight: Radius.circular(50))),
                     child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Form(
-                key: _registerFormKey,
-                child: Column(
-                  children: [
-                    SizedBox(height: 50,),
-                    TextFormField(
-                      controller: _nameTextController,
-                      focusNode: _focusName,
-                      validator: (value) => Validator.validateName(
-                        name: value,
-                      ),
-                     decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none),
-                                filled: true,
-                                fillColor:
-                                    const Color.fromARGB(255, 229, 229, 229),
-                                hintText: "Enter your name",
-                                prefixIcon: const Icon(Icons.person)),
-                    ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      controller: _emailTextController,
-                      focusNode: _focusEmail,
-                      validator: (value) => Validator.validateEmail(
-                        email: value,
-                      ),
-                      decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none),
-                                filled: true,
-                                fillColor:
-                                    const Color.fromARGB(255, 229, 229, 229),
-                                hintText: "Enter your email",
-                                prefixIcon: const Icon(Icons.email)),
-                    ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      controller: _passwordTextController,
-                      focusNode: _focusPassword,
-                      obscureText: true,
-                      validator: (value) => Validator.validatePassword(
-                        password: value,
-                      ),
-                       decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none),
-                                filled: true,
-                                fillColor:
-                                    const Color.fromARGB(255, 229, 229, 229),
-                                hintText: "Enter your password",
-                                prefixIcon: const Icon(Icons.remove_red_eye)),
-                    ),
-                    const SizedBox(height: 40),
-                    _isProcessing
-                    ? const CircularProgressIndicator()
-                    : Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              setState(() {
-                                _isProcessing = true;
-                              });
-
-                              if (_registerFormKey.currentState!
-                                  .validate()) {
-                                User? user = await FirebaseAuthHelper
-                                    .registerUsingEmailPassword(
-                                  name: _nameTextController.text,
-                                  email: _emailTextController.text,
-                                  password:
-                                  _passwordTextController.text,
-                                );
-
-                                setState(() {
-                                  _isProcessing = false;
-                                });
-
-                                if (user != null) {
-                                  Navigator.of(context)
-                                      .pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          HomeScreen(),
-                                    ),
-                                    ModalRoute.withName('/'),
-                                  );
-                                }
-                              }else{
-                                setState(() {
-                                  _isProcessing = false;
-                                });
-                              }
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.deepOrangeAccent),
-                            ),
-                            child: const Text(
-                              'Sign up',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                        padding: const EdgeInsets.all(25),
+                        child: Form(
+                          key: _registerFormKey,
+                          child: Column(
                             children: [
-                              const Text(
-                                "Already have account?",
-                                style: TextStyle(fontSize: 18),
+                              const SizedBox(
+                                height: 50,
                               ),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) =>
-                                           LoginScreen(),
-                                    ));
-                                  },
-                                  child: const Text(
-                                    "Sign in",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.deepOrange),
-                                  ))
+                              TextFormField(
+                                controller: _nameTextController,
+                                focusNode: _focusName,
+                                validator: (name) {
+                                  if (name == null) {
+                                    return null;
+                                  }
+
+                                  if (name.isEmpty) {
+                                    return 'Name can\'t be empty';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide.none),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                        255, 229, 229, 229),
+                                    hintText: "Enter your name",
+                                    prefixIcon: const Icon(Icons.person)),
+                              ),
+                              const SizedBox(height: 30),
+                              TextFormField(
+                                controller: _emailTextController,
+                                focusNode: _focusEmail,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Email is required';
+                                  }
+                                  if (!RegExp(
+                                          r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$')
+                                      .hasMatch(value)) {
+                                    return 'Invalid email format';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide.none),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                        255, 229, 229, 229),
+                                    hintText: "Enter your email",
+                                    prefixIcon: const Icon(Icons.email)),
+                              ),
+                              const SizedBox(height: 30),
+                              TextFormField(
+                                obscureText: passwordObsecured,
+                                controller: _passwordTextController,
+                                focusNode: _focusPassword,
+                               
+                                validator: (value) {
+                                  if (value == null) {
+                                    return null;
+                                  }
+
+                                  if (value.isEmpty) {
+                                    return 'Password can\'t be empty';
+                                  } else if (value.length < 6) {
+                                    return 'Enter a password with length at least 6';
+                                  }
+
+                                  return null;
+                                },
+                                onSaved: (value) {
+                          _password = value!;
+                        },
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none),
+                                  filled: true,
+                                  fillColor:
+                                      const Color.fromARGB(255, 229, 229, 229),
+                                  hintText: "Enter your password",
+                                  prefixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          passwordObsecured =
+                                              !passwordObsecured;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        passwordObsecured
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      )),
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                              _isProcessing
+                                  ? const CircularProgressIndicator()
+                                  : Row(
+                                      children: [
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              setState(() {
+                                                _isProcessing = true;
+                                              });
+
+                                              if (_registerFormKey.currentState!
+                                                  .validate()) {
+                                                User? user =
+                                                    await FirebaseAuthHelper
+                                                        .registerUsingEmailPassword(
+                                                  name:
+                                                      _nameTextController.text,
+                                                  email:
+                                                      _emailTextController.text,
+                                                  password:
+                                                      _passwordTextController
+                                                          .text,
+                                                );
+
+                                                setState(() {
+                                                  _isProcessing = false;
+                                                });
+
+                                                if (user != null) {
+                                                  Navigator.of(context)
+                                                      .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const HomeScreen(),
+                                                    ),
+                                                    ModalRoute.withName('/'),
+                                                  );
+                                                }
+                                              } else {
+                                                setState(() {
+                                                  _isProcessing = false;
+                                                });
+                                              }
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.deepOrangeAccent),
+                                            ),
+                                            child: const Text(
+                                              'Sign up',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 21),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Already have account?",
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen(),
+                                        ));
+                                      },
+                                      child: const Text(
+                                        "Sign in",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.deepOrange),
+                                      ))
+                                ],
+                              )
                             ],
-                          )
-                  ],
-                ),
-              )
-                    ),
+                          ),
+                        )),
                   ),
                 )
               ],
             ),
           ),
         ));
-}
+  }
 }
